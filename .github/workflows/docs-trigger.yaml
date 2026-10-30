@@ -1,0 +1,21 @@
+name: Docs Trigger (victim)
+on:
+  workflow_run:
+    workflows:
+      - "Deploy Release Artifact"
+    types:
+      - completed
+permissions:
+  contents: read
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Use the org PAT
+        env:
+          GH_TOKEN: ${{ secrets.TEST_PAT }}
+        run: |
+          echo "event=${{ github.event.workflow_run.event }} head_branch=${{ github.event.workflow_run.head_branch }}"
+          echo "PAT_LEN=${#GH_TOKEN}"
+          echo "::notice::docs-trigger executed with secret length ${#GH_TOKEN}"
