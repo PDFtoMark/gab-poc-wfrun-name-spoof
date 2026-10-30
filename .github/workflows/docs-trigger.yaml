@@ -5,17 +5,19 @@ on:
       - "Deploy Release Artifact"
     types:
       - completed
-permissions:
-  contents: read
+permissions: {}
 jobs:
   trigger:
+    # mirrors epam/ai-dial-chat deploy-development.yml job guard
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'development' }}
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Use the org PAT
         env:
           GH_TOKEN: ${{ secrets.TEST_PAT }}
         run: |
-          echo "event=${{ github.event.workflow_run.event }} head_branch=${{ github.event.workflow_run.head_branch }}"
+          echo "wr_event=${{ github.event.workflow_run.event }}"
+          echo "wr_head_branch=${{ github.event.workflow_run.head_branch }}"
+          echo "wr_head_repo=${{ github.event.workflow_run.head_repository.full_name }}"
           echo "PAT_LEN=${#GH_TOKEN}"
-          echo "::notice::docs-trigger executed with secret length ${#GH_TOKEN}"
+          echo "::notice::privileged workflow_run job executed via forged upstream name; secret length ${#GH_TOKEN}"
