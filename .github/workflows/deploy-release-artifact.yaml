@@ -1,5 +1,6 @@
 name: Deploy Release Artifact
 on:
+  pull_request:
   workflow_dispatch: {}
 permissions:
   contents: read
@@ -7,4 +8,4 @@ jobs:
   noop:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "real upstream, dispatch-only"
+      - run: echo "control-plane run; reuses watched name, PR head branch is development"
